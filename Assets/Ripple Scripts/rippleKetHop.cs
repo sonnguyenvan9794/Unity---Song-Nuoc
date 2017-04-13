@@ -25,7 +25,15 @@ public class rippleKetHop : MonoBehaviour {
     private bool swapMe = true;
 
     //Các thông số động
-    float khoangCach = 0.1f;
+    /// <summary>
+    /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
+    /// </summary>
+    /// Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh
+    /// <summary>
+    float heSoDinhTrenMesh = 2;
+    /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
+    /// </summary>
+    float distance = 0.5f;
 
     public int cols;
     public int rows;
@@ -90,8 +98,7 @@ public class rippleKetHop : MonoBehaviour {
 
     void BuildMesh()
     {
-        int k = 1;
-        float distance = 1 / k;
+        float k = 1 / distance;
 
         int row = rows + 1;
         int col = cols + 1;
@@ -356,7 +363,7 @@ public class rippleKetHop : MonoBehaviour {
 
     private bool taoMaTranMatHo()
     {
-
+        float khoangCach = 1 / heSoDinhTrenMesh;
         DuLieu dulieu = new DuLieu();
 
         //hienThiConsoleThongSoManHinh(dulieu);
