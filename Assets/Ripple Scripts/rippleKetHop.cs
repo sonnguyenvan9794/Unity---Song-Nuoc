@@ -24,6 +24,9 @@ public class rippleKetHop : MonoBehaviour {
     //private int slowdownCount = 0;
     private bool swapMe = true;
 
+    //Các thông số động
+    float khoangCach = 0.1f;
+
     public int cols;
     public int rows;
 
@@ -42,6 +45,7 @@ public class rippleKetHop : MonoBehaviour {
         print("max: " + max);
         cols = max;
         rows = max;
+
         BuildMesh();
 
         //L?y mesh
@@ -350,10 +354,8 @@ public class rippleKetHop : MonoBehaviour {
         }
     }
 
-    private void taoMaTranMatHo()
+    private bool taoMaTranMatHo()
     {
-        //Các thông số động
-        float khoangCach = 0.5f;
 
         DuLieu dulieu = new DuLieu();
 
@@ -384,6 +386,14 @@ public class rippleKetHop : MonoBehaviour {
         //Kich thuoc ma tran
         int numRow = Mathf.RoundToInt((xMAX - xSTART) / khoangCach);
         int numCol = Mathf.RoundToInt((yMAX - ySTART) / khoangCach);
+        int maxIndexMaTran = numRow > numCol ? numRow : numCol;
+
+        if (maxIndexMaTran > 200)
+        {
+            khoangCach += 0.1f;
+            taoMaTranMatHo();
+            return true;
+        }
 
         //Tạo ma trận bool
         maTranBool = new bool[numRow][];
@@ -417,6 +427,7 @@ public class rippleKetHop : MonoBehaviour {
                 }
             }
         }
+        return true;
     }
 
     private float lamTronTheoTungDoan(float number, float distance)
