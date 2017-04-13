@@ -26,14 +26,13 @@ public class rippleKetHop : MonoBehaviour {
 
     //Các thông số động
     /// <summary>
-    /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
+    /// 1/ khoangCach là Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh. Khoảng cách cần nên là số hữu hạn 1 chữ số thập phân
     /// </summary>
-    /// Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh
+    float khoangCach = 0.5f;
     /// <summary>
-    float heSoDinhTrenMesh = 2;
     /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
     /// </summary>
-    float distance = 0.5f;
+    float distance = 1f;
 
     public int cols;
     public int rows;
@@ -49,17 +48,18 @@ public class rippleKetHop : MonoBehaviour {
     {
         //Xác định ma trận mặt hồ
         taoMaTranMatHo();
+
         int max = maTranBool.Length > maTranBool[0].Length? maTranBool.Length + 2 : maTranBool[0].Length + 2;
         print("max: " + max);
-        cols = max;
-        rows = max;
 
-        BuildMesh();
+        BuildMesh( max);
 
         //L?y mesh
         MeshFilter mf = (MeshFilter)gameObject.GetComponent(typeof(MeshFilter));
         mesh = mf.mesh;
-        //collider = GetComponent<Collider>();
+        //int[] triangles = mesh.GetTriangles(mesh.subMeshCount); ??? Nếu muốn xóa cái kia
+
+        collider = GetComponent<Collider>();
 
         vertices = mesh.vertices;
         print("vertices length: " + vertices.Length);
@@ -83,8 +83,8 @@ public class rippleKetHop : MonoBehaviour {
             buffer2[i] = 0;
         }
 
-        // this will produce a list of indices that are sorted the way I need them to 
-        // be for the algo to work right
+        //// this will produce a list of indices that are sorted the way I need them to 
+        //// be for the algo to work right
         for (i = 0; i < vertices.Length; i++)
         {
             float column = ((vertices[i].x - bounds.min.x) / xStep);// + 0.5;
@@ -93,12 +93,15 @@ public class rippleKetHop : MonoBehaviour {
             if (vertexIndices[(int)position] >= 0) print("smash");
             vertexIndices[(int)position] = i;
         }
-        splashAtPoint(cols / 2, rows / 2);
+        //splashAtPoint(cols / 2, rows / 2);
     }
 
-    void BuildMesh()
+    void BuildMesh(int max)
     {
-        float k = 1 / distance;
+        cols = max;
+        rows = max;
+
+        float k = 1f / distance;
 
         int row = rows + 1;
         int col = cols + 1;
@@ -152,6 +155,16 @@ public class rippleKetHop : MonoBehaviour {
                 int hangi = i * row + j;
                 //print("int hangi = " + i + " * " + row + " + " + j + " = " + hangi);
                 int hangicong1 = hangi + col;
+
+                //Loaoij bỏ các trangles không thuộc ao
+                int hangiTest = j * row + i;
+                int hangicong1Test = hangiTest + col;
+                if ( !(maTranBool1Chieu[hangiTest] && maTranBool1Chieu[hangicong1Test] && maTranBool1Chieu[hangiTest + 1] && maTranBool1Chieu[hangicong1Test + 1]))
+                {
+                    diem[index++] = 0; diem[index++] = 0; diem[index++] = 0;
+                    diem[index++] = 0; diem[index++] = 0; diem[index++] = 0;
+                    continue;
+                }
                 //print("int hangicong1 = " + hangi + " + " + col + " = " + hangicong1);
                 //mat phang 1
                 diem[index++] = hangi; diem[index++] = hangicong1 + 1; diem[index++] = hangicong1;
@@ -285,11 +298,14 @@ public class rippleKetHop : MonoBehaviour {
         //độ cao sóng
         for (i = 0; i < currentBuffer.Length; i++)
         {
+            vertIndex = vertexIndices[i];
             if (!maTranBool1Chieu[i])
             {
                 currentBuffer[i] = 0;
+                //theseVertices[vertIndex] = vertices[vertIndex];
+                //theseVertices[vertIndex].y = -100;
+                //continue;
             }
-            vertIndex = vertexIndices[i];
                 theseVertices[vertIndex] = vertices[vertIndex];
                 theseVertices[vertIndex].y += (currentBuffer[i] * 1.0f / splashForce) * maxWaveHeight;
         }
@@ -363,7 +379,6 @@ public class rippleKetHop : MonoBehaviour {
 
     private bool taoMaTranMatHo()
     {
-        float khoangCach = 1 / heSoDinhTrenMesh;
         DuLieu dulieu = new DuLieu();
 
         //hienThiConsoleThongSoManHinh(dulieu);
