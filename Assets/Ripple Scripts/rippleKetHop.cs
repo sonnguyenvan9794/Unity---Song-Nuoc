@@ -24,37 +24,30 @@ public class rippleKetHop : MonoBehaviour {
     //private int slowdownCount = 0;
     private bool swapMe = true;
 
-    //Các thông số động
-    /// <summary>
-    /// 1/ khoangCach là Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh. Khoảng cách cần nên là số hữu hạn 1 chữ số thập phân
-    /// </summary>
-    float khoangCach = 0.5f;
-    /// <summary>
-    /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
-    /// </summary>
-    float distance = 1f;
 
     public int cols;
     public int rows;
 
     /// <summary>
-    /// Ma trận mặt nước
+    /// Ma trận mặt nước 1 chiều
     /// </summary>
-    bool[][] maTranBool;
     bool[] maTranBool1Chieu;
 
     // Use this for initialization
     void Start()
     {
-        //Xác định ma trận mặt hồ
-        taoMaTranMatHo();
-
-        int max = maTranBool.Length > maTranBool[0].Length? maTranBool.Length + 2 : maTranBool[0].Length + 2;
+        //Tạo ma trân mặt hồ
+        DuLieu.getInstance().taoMaTranMatHo();
+        
+        int max = DuLieu.maTranBool.Length > DuLieu.maTranBool[0].Length
+            ? DuLieu.maTranBool.Length + 2 
+            : DuLieu.maTranBool[0].Length + 2;
         print("max: " + max);
 
-        BuildMesh( max);
+        //Xây dựng mesh
+        BuildMesh(max);
 
-        //L?y mesh
+        //Lấy mesh và thiết lập
         MeshFilter mf = (MeshFilter)gameObject.GetComponent(typeof(MeshFilter));
         mesh = mf.mesh;
         //int[] triangles = mesh.GetTriangles(mesh.subMeshCount); ??? Nếu muốn xóa cái kia
@@ -101,7 +94,7 @@ public class rippleKetHop : MonoBehaviour {
         cols = max;
         rows = max;
 
-        float k = 1f / distance;
+        float k = 1f / DuLieu.getInstance().getDistance();
 
         int row = rows + 1;
         int col = cols + 1;
@@ -127,7 +120,7 @@ public class rippleKetHop : MonoBehaviour {
                 tmp[i * row + j] = p[i][j];
                 uv[i * row + j] = new Vector2((float)i / row, (float)j / col);
 
-                if (i<maTranBool.Length && j<maTranBool[0].Length && maTranBool[i][j])
+                if (i< DuLieu.maTranBool.Length && j< DuLieu.maTranBool[0].Length && DuLieu.maTranBool[i][j])
                     maTranBool1Chieu[i * row + j] = true;
             }
         }
@@ -205,6 +198,7 @@ public class rippleKetHop : MonoBehaviour {
         MeshCollider meshc = gameObject.GetComponent<MeshCollider>();
         meshc.sharedMesh = mesh2;
         meshc.tag = "vacham";
+
         gameObject.GetComponent<Collider>().tag = "vacham";
 
         //------------------
@@ -344,8 +338,7 @@ public class rippleKetHop : MonoBehaviour {
             }
         }
     }
-
-
+    
     void processRipples(int[] source, int[] dest)
     {
         int x = 0;
@@ -377,137 +370,23 @@ public class rippleKetHop : MonoBehaviour {
         }
     }
 
-    private bool taoMaTranMatHo()
+    void OnTriggerEnter(Collider c)
     {
-        DuLieu dulieu = new DuLieu();
+        Vector3 matNuocPosition = gameObject.transform.position;
+        Vector3 vatThePosition = c.gameObject.transform.position;
 
-        //hienThiConsoleThongSoManHinh(dulieu);
-
-        //Lấy tọa độ (xMin, yMin) và (xMax, yMax)
-        float xMIN = 999999, yMIN = 999999;
-        float xMAX = -999999, yMAX = -999999;
-        for (int i = 0; i < dulieu.screen.Length; i++)
-        {
-            ScreenThongSo screen = dulieu.screen[i];
-
-            if (screen.xMin < xMIN)
-                xMIN = screen.xMin;
-            if (screen.xMax > xMAX)
-                xMAX = screen.xMax;
-            if (screen.yMin < yMIN)
-                yMIN = screen.yMin;
-            if (screen.yMax > yMAX)
-                yMAX = screen.yMax;
-        }
-        //hienThiConsoleXYMinMax(xMin, xMax, yMin, yMax);
-
-        //Tọa độ bắt đầu ma trận
-        float xSTART = lamTronTheoTungDoan(xMIN, khoangCach);
-        float ySTART = lamTronTheoTungDoan(yMIN, khoangCach);
-
-        //Kich thuoc ma tran
-        int numRow = Mathf.RoundToInt((xMAX - xSTART) / khoangCach);
-        int numCol = Mathf.RoundToInt((yMAX - ySTART) / khoangCach);
-        int maxIndexMaTran = numRow > numCol ? numRow : numCol;
-
-        if (maxIndexMaTran > 200)
-        {
-            khoangCach += 0.1f;
-            taoMaTranMatHo();
-            return true;
-        }
-
-        //Tạo ma trận bool
-        maTranBool = new bool[numRow][];
-        for (int i = 0; i < numRow; i++)
-        {
-            maTranBool[i] = new bool[numCol];
-        }
-        //hienThiConsoleNumRowNumCol(numRow, numCol);
-
-        //Xác định những điểm nào thuộc ma trận
-        for (int i = 0; i < dulieu.screen.Length; i++)
-        {
-            ScreenThongSo screen = dulieu.screen[i];
-            
-            //xStart, yStart
-            //float xStartScreen = lamTronTheoTungDoan(screen.xMin, khoangCach);
-            //float yStartScreen = lamTronTheoTungDoan(screen.yMin, khoangCach);
-
-            int indexXMin = Mathf.RoundToInt((screen.xMin - xSTART) / khoangCach);
-            int indexYMin = Mathf.RoundToInt((screen.yMin - ySTART) / khoangCach);
-
-            int indexXMax = Mathf.RoundToInt((screen.xMax - xSTART) / khoangCach);
-            int indexYMax = Mathf.RoundToInt((screen.yMax - ySTART) / khoangCach);
-
-            //Ghi nhận vào ma trận Boolean
-            for (int j = indexXMin; j < indexXMax; j++)
-            {
-                for (int k = indexYMin; k < indexYMax; k++)
-                {
-                    maTranBool[j][k] = true;
-                }
-            }
-        }
-        return true;
+        Vector2 toaDo = new Vector2(vatThePosition.x - matNuocPosition.x, vatThePosition.z - matNuocPosition.z);
+        print("đã va chạm: x = " + toaDo.x + ", y = " + toaDo.y);
+        Bounds bounds = mesh.bounds;
+        float xStep = (bounds.max.x - bounds.min.x) / cols;
+        float zStep = (bounds.max.z - bounds.min.z) / rows;
+        float xCoord = (bounds.max.x - bounds.min.x) * (toaDo.x - 1);
+        float zCoord = (bounds.max.z - bounds.min.z) * (1 - toaDo.y);
+        float column = (cols + xCoord / xStep);// + 0.5;
+        float row = (rows - zCoord / zStep);// + 0.5;
+        //print("distance: " + hit.distance);
+        //print("hit x: " + hit.textureCoord.x + ", hit y: " + hit.textureCoord.y + ", (" + (int)column + "," + (int)row + ")");
+        splashAtPoint((int)column, (int)row);
     }
 
-    private float lamTronTheoTungDoan(float number, float distance)
-    {
-        return Mathf.RoundToInt(number / distance) * distance;
-    }
-
-
-    //--------------- Hiển thị Console -----------------------
-
-    private void hienThiConsoleThongSoManHinh(DuLieu dulieu)
-    {
-        for (int i = 0; i < dulieu.screen.Length; i++)
-        {
-            print("(" + dulieu.screen[i].centerPoint.x + ", " + dulieu.screen[i].centerPoint.y + ")"
-                + ", " + dulieu.screen[i].width
-                + ", " + dulieu.screen[i].height);
-        }
-    }
-
-    private void hienThiConsoleXYMinMax(float xMin, float xMax, float yMin, float yMax)
-    {
-        print("xMin: " + xMin); print("xMax: " + xMax); print("yMin: " + yMin); print("yMax: " + yMax);
-    }
-
-    private void hienThiConsoleNumRowNumCol(int numRow, int numCol)
-    {
-        print("numRow: " + numRow);
-        print("numCol: " + numCol);
-    }
-
-    private void hienThiConsoleMaTranBool(bool[][] maTranBool)
-    {
-        //Đảo ma trận
-        bool[][] maTran = new bool[maTranBool[0].Length][];
-        for (int i = 0; i < maTran.Length; i++)
-        {
-            maTran[i] = new bool[maTranBool.Length];
-            for (int j = 0; j < maTran[i].Length; j++)
-            {
-                maTran[i][j] = maTranBool[j][maTranBool[0].Length - 1 - i];
-            }
-        }
-
-        for (int i = 0; i < maTran.Length; i++)
-        {
-            string str = "";
-            for (int j = 0; j < maTran[i].Length; j++)
-            {
-                if (maTran[i][j])
-                {
-                    str += "1    ";
-                } else
-                {
-                    str += "0    ";
-                }
-            }
-            print(str);
-        }
-    }
 }
