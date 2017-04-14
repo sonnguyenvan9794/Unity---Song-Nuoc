@@ -30,9 +30,13 @@ public class DuLieu : MonoBehaviour{
         screen[0] = new ScreenThongSo(new Vector2(0, 0), 20, 10);
         screen[1] = new ScreenThongSo(new Vector2(25, 12.5f), 40, 15);
         screen[2] = new ScreenThongSo(new Vector2(10, -12.5f), 30, 15);
+
+        //screen[0] = new ScreenThongSo(new Vector2(25, 10), 50, 20);
+        //screen[1] = new ScreenThongSo(new Vector2( 0, -15), 40, 30);
+
         //man4 = new ScreenThongSo(new Vector2(0, 0), 3, 2);
         //man5 = new ScreenThongSo(new Vector2(0, 0), 3, 2);
-        //man6 = new ScreenThongSo(new Vector2(0, 0), 3, 2);
+        //man6 = new ScreenThongSo(new Vector2(0, 0S), 3, 2);
 
     }
 
@@ -118,6 +122,7 @@ public class DuLieu : MonoBehaviour{
                 }
             }
         }
+
         
         return true;
     }

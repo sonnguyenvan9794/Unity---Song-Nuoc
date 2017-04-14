@@ -11,8 +11,7 @@ public class BoHoMeshScript : MonoBehaviour
     private int[] vertexIndices;
 
     private Mesh mesh;
-
-    private Vector3[] vertices;
+    
     //private Vector3[] normals ;
 
     public float dampner = 0.999f;
@@ -112,48 +111,8 @@ public class BoHoMeshScript : MonoBehaviour
         print("canh = " + max + themMeshCanh * 2);
 
         //Xây dựng mesh
-        BuildMesh(max + themMeshCanh * 2);
-
-        //Lấy mesh và thiết lập
-        MeshFilter mf = (MeshFilter)gameObject.GetComponent(typeof(MeshFilter));
-        mesh = mf.mesh;
-        //int[] triangles = mesh.GetTriangles(mesh.subMeshCount); ??? Nếu muốn xóa cái kia
-
-        collider = GetComponent<Collider>();
-
-        vertices = mesh.vertices;
-        print("vertices length: " + vertices.Length);
-        buffer1 = new int[vertices.Length];
-        print("tổng: " + vertices.Length);
-
-        buffer2 = new int[vertices.Length];
-
-        Bounds bounds = mesh.bounds;
-
-        float xStep = (bounds.max.x - bounds.min.x) / cols;
-        float zStep = (bounds.max.z - bounds.min.z) / rows;
-
-        vertexIndices = new int[vertices.Length];
-
-        int i = 0;
-        for (i = 0; i < vertices.Length; i++)
-        {
-            vertexIndices[i] = -1;
-            buffer1[i] = 0;
-            buffer2[i] = 0;
-        }
-
-        //// this will produce a list of indices that are sorted the way I need them to 
-        //// be for the algo to work right
-        for (i = 0; i < vertices.Length; i++)
-        {
-            float column = ((vertices[i].x - bounds.min.x) / xStep);// + 0.5;
-            float rowz = ((vertices[i].z - bounds.min.z) / zStep);// + 0.5;
-            float position = (rowz * (cols + 1)) + column;// + 0.5f;
-            if (vertexIndices[(int)position] >= 0) print("smash");
-            vertexIndices[(int)position] = i;
-        }
-        //splashAtPoint(cols / 2, rows / 2);
+        //BuildMesh(max + themMeshCanh * 2);
+        
     }
 
     private void BuildMesh(int max)
