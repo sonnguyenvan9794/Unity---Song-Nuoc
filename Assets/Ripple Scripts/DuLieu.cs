@@ -18,10 +18,16 @@ public class DuLieu : MonoBehaviour{
     /// 1/ khoangCach là Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh. Khoảng cách cần nên là số hữu hạn 1 chữ số thập phân
     /// </summary>
     private float khoangCach = 0.3f;
+
     /// <summary>
     /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
     /// </summary>
     private float distance = 0.5f;
+
+    /// <summary>
+    /// Độ rộng đơn vị mesh bờ ao. Mỗi đơn vị có độ dài  = distance
+    /// </summary>
+    private int chieuRongMeshBoAo = 30; //TÙY CHỌN
 
     private DuLieu()
     {
@@ -136,6 +142,11 @@ public class DuLieu : MonoBehaviour{
     public float getDistance()
     {
         return distance;
+    }
+
+    public int getChieuRongMeshBoAo()
+    {
+        return chieuRongMeshBoAo;
     }
 
     public ScreenThongSo[] getScreen()
