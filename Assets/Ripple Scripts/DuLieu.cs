@@ -27,7 +27,7 @@ public class DuLieu : MonoBehaviour{
     /// <summary>
     /// Độ rộng đơn vị mesh bờ ao. Mỗi đơn vị có độ dài  = distance
     /// </summary>
-    private int chieuRongMeshBoAo = 100;
+    private int chieuRongMeshBoAo = 50;
 
     /// <summary>
     /// Độ cao bờ ao

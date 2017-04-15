@@ -133,7 +133,7 @@ public class rippleKetHop : MonoBehaviour {
                 uv[i * row + j] = new Vector2((float)i / row, (float)j / col);
 
                 if (i < DuLieu.maTranBool.Length && j < DuLieu.maTranBool[0].Length && DuLieu.maTranBool[i][j])
-                    maTranBool1Chieu[i * row + j] = true;
+                    maTranBool1Chieu[j * row + i] = true; //??? có thể đổi hướng ao (2 chỗ)
             }
         }
 
@@ -163,7 +163,7 @@ public class rippleKetHop : MonoBehaviour {
                 int hangicong1 = hangi + col;
 
                 //Loaoij bỏ các trangles không thuộc ao
-                int hangiTest = i * row + j;
+                int hangiTest = j * row + i; //??? có thể đổi hướng ao (2 chỗ)
                 int hangicong1Test = hangiTest + col;
                 if (!(maTranBool1Chieu[hangiTest] && maTranBool1Chieu[hangicong1Test] && maTranBool1Chieu[hangiTest + 1] && maTranBool1Chieu[hangicong1Test + 1]))
                 {
