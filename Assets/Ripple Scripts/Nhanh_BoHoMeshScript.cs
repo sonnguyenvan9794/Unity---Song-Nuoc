@@ -6,16 +6,115 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
     
     bool[][] maTranTmp;
 
-    // Use this for initialization
+// Use this for initialization
     void Start ()
     {
         //TẠO CÁC KHỐI NỀN
         List<Vector4> listKhoiNen = layCacKhoiNen();
-        print("=== tạo nền bờ bao =======");
-        buildMeshBoBao(listKhoiNen);
+
+        //Có lỗi
+        //List<Vector4> mepAos = layMepAo(listKhoiNen);
+        //print("=== Tập hợp mép ao : " + mepAos.Count + " =======");
+        //for (int i = 0; i < mepAos.Count; i++)
+        //{
+        //    print("x = " + mepAos[i].x + ", y = " + mepAos[i].y + ", z = " + mepAos[i].z + ", w = " + mepAos[i].w);
+        //}
+        //print("--------------------------------------------");
+
+        //print("=== tạo nền bờ bao =======");
+
+        //Cách 1
+        //buildMeshBoBao(listKhoiNen);
+        //Cách 2
+        buildCubeNen(listKhoiNen);
+        buildTuong(listKhoiNen);
 
         //Đặt vị trí
         gameObject.transform.position = new Vector3(0, DuLieu.getInstance().getDoCaoBoBao(), 0);
+    }
+
+    private List<Vector4> layMepAo(List<Vector4> list)
+    {
+        List<Vector4> mepAos = new List<Vector4>();
+
+        for (int i = 0; i < list.Count; i++)
+        {
+            bool[][] maTranBoolCopy = DuLieu.maTranBool;
+            int chieuRongMeshBoAo = DuLieu.getInstance().getChieuRongMeshBoAo();
+            int x = (int)list[i].x - chieuRongMeshBoAo;
+            int y = (int)list[i].y - chieuRongMeshBoAo;
+            int z = (int)list[i].z - chieuRongMeshBoAo;
+            int w = (int)list[i].w - chieuRongMeshBoAo;
+
+            //print(maTranBoolCopy.Length + " | " + maTranBoolCopy[0].Length);
+            //print(chieuRongMeshBoAo);
+            //print(x + " | " + y + " | " + z + " | " + w);
+
+            //Kiểm tra bên dưới (x,y) -> (z,y)
+            if (y != (0 - chieuRongMeshBoAo))
+            {
+                if (maTranBoolCopy[x][y]
+                 && maTranBoolCopy[z][y])
+                {
+                    print("+");
+                    //Nếu cả 2 đều true và k phải và mép phải bờ thì nó chính là mép ao. Thêm vào list mép ao
+                    Vector4 tmp = new Vector4();
+                    tmp.x = x; tmp.y = y;
+                    tmp.z = z; tmp.y = y;
+                    mepAos.Add(tmp);
+                }
+            }
+            else
+            {
+                continue;
+            }
+            //Kiểm tra bên trên (x,w) -> (z,w)
+            if (w != (maTranBoolCopy[0].Length + chieuRongMeshBoAo - 1))
+            {
+                if (maTranBoolCopy[x][w]
+                 && maTranBoolCopy[z][w])
+                {
+                    print("+");
+                    Vector4 tmp = new Vector4();
+                    tmp.x = x; tmp.w = w;
+                    tmp.z = z; tmp.w = w;
+                    mepAos.Add(tmp);
+                }
+            }
+            else
+            {
+                continue;
+            }
+            //Kiểm tra bên phải (z,y) -> (z,w)
+            if (z != (maTranBoolCopy.Length + chieuRongMeshBoAo - 1)
+                 && maTranBoolCopy[z][y]
+                 && maTranBoolCopy[z][w])
+            {
+                Vector4 tmp = new Vector4();
+                tmp.z = z; tmp.y = y;
+                tmp.z = z; tmp.w = w;
+                mepAos.Add(tmp);
+            }
+            else
+            {
+                continue;
+            }
+            //Kiểm tra bên trái (x,y) -> (x,w)
+            if (x != (0 - chieuRongMeshBoAo)
+                 && maTranBoolCopy[x][ y]
+                 && maTranBoolCopy[ x][ w])
+            {
+                Vector4 tmp = new Vector4();
+                tmp.x = x; tmp.y = y;
+                tmp.x = x; tmp.w = w;
+                mepAos.Add(tmp);
+            }
+            else
+            {
+                continue;
+            }
+        }
+        return mepAos;
     }
 
     //================== tạo các khổi nền =====================
@@ -179,6 +278,70 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
         print("=== Tạo xong bờ bao ====");
     }
 
+    private void buildCubeNen(List<Vector4> list)
+    {
+        for (int i = 0; i < list.Count; i++)
+        {
+            Vector4 tmp = list[i] * DuLieu.getInstance().getDistance();
+            list[i] = tmp;
+
+            float xGiua = (list[i].z + list[i].x) / 2;
+            float zGiua = (list[i].w + list[i].y) / 2;
+            Vector3 position = new Vector3(xGiua, 0, zGiua);
+
+            float xLocal = (list[i].z - list[i].x) ;
+            float yLocal = DuLieu.getInstance().getDoCaoBoBao() * 2;
+            float zLocal = (list[i].w - list[i].y) ;
+            Vector3 localScale = new Vector3(xLocal, yLocal, zLocal);
+
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            cube.transform.position = position;
+            cube.transform.localScale = localScale;
+
+            if (!GetComponent<MeshFilter>())
+                cube.AddComponent<MeshFilter>();
+            if (!GetComponent<MeshRenderer>())
+                cube.AddComponent<MeshRenderer>();
+            if (!GetComponent<MeshCollider>())
+                cube.AddComponent<MeshCollider>();
+        }
+    }
+
+    private void buildTuong(List<Vector4> list)
+    {
+        float xMax = (maTranTmp.Length + 2 * DuLieu.getInstance().getChieuRongMeshBoAo()) * DuLieu.getInstance().getDistance();
+        float yMax = (maTranTmp[0].Length + 2 * DuLieu.getInstance().getChieuRongMeshBoAo()) * DuLieu.getInstance().getDistance();
+
+        GameObject[] cube = new GameObject[4];
+
+        cube[0] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube[0].transform.position = new Vector3(-0.5f, 15, yMax / 2);
+        cube[0].transform.localScale = new Vector3(1, 30, yMax);
+
+        cube[1] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube[1].transform.position = new Vector3( xMax + 0.5f, 15, yMax / 2);
+        cube[1].transform.localScale = new Vector3(1, 30, yMax);
+
+        cube[2] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube[2].transform.position = new Vector3( xMax / 2, 15, -0.5f);
+        cube[2].transform.localScale = new Vector3(xMax, 30, 1);
+
+        cube[3] = GameObject.CreatePrimitive(PrimitiveType.Cube);
+        cube[3].transform.position = new Vector3(xMax / 2, 15, yMax + 0.5f);
+        cube[3].transform.localScale = new Vector3(xMax, 30, 1);
+
+        for (int i = 0; i < cube.Length; i++)
+        {
+            if (!GetComponent<MeshFilter>())
+                cube[i].AddComponent<MeshFilter>();
+            if (!GetComponent<MeshRenderer>())
+                cube[i].AddComponent<MeshRenderer>();
+            if (!GetComponent<MeshCollider>())
+                cube[i].AddComponent<MeshCollider>();
+        }
+    }
+
+
 
     private int kiemTraMaxDai(int dai, int rong, int x1, int y1)
     {
@@ -248,7 +411,7 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
 
         //Đánh dấu khối này đã duyệt
         danhDauDaDuyet(x1, y1, dai, rong);
-
+        
         //(x,y) tọa độ điểm đầu, (z,w) tọa độ điểm cuối
         Vector4 thongSo = new Vector4();
         thongSo.x = x1 - 1;

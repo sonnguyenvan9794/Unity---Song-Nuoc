@@ -17,7 +17,7 @@ public class DuLieu : MonoBehaviour{
     /// <summary>
     /// 1/ khoangCach là Hệ số đỉnh trên mesh, tỷ lệ thuận với số đỉnh. Khoảng cách cần nên là số hữu hạn 1 chữ số thập phân
     /// </summary>
-    private float khoangCach = 0.3f;
+    private float khoangCach = 0.4f;
 
     /// <summary>
     /// Khoảng cách mỗi đơn vị ao, tỷ lệ tuận với kích thước ao
@@ -32,15 +32,15 @@ public class DuLieu : MonoBehaviour{
     /// <summary>
     /// Độ cao bờ ao
     /// </summary>
-    private float doCaoBoBao = 0.5f;
+    private float doCaoBoBao = 2f;
 
     private DuLieu()
     {
         screen = new ScreenThongSo[3];
 
-        screen[0] = new ScreenThongSo(new Vector2(0, 0), 20, 10);
-        screen[1] = new ScreenThongSo(new Vector2(25, 12.5f), 40, 15);
-        screen[2] = new ScreenThongSo(new Vector2(10, -12.5f), 30, 15);
+        screen[0] = new ScreenThongSo(new Vector2(0, 0), 40, 20);
+        screen[1] = new ScreenThongSo(new Vector2(50, 25f), 80, 30);
+        screen[2] = new ScreenThongSo(new Vector2(20, -25f), 60, 30);
 
         //screen[0] = new ScreenThongSo(new Vector2(25, 10), 50, 20);
         //screen[1] = new ScreenThongSo(new Vector2( 0, -15), 40, 30);
