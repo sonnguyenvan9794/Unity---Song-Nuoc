@@ -1,0 +1,44 @@
+Initialize engine version: 5.5.0f3 (38b4efef76f0)
+GfxDevice: creating device client; threaded=1
+Direct3D:
+    Version:  Direct3D 11.0 [level 11.0]
+    Renderer: Intel(R) HD Graphics 4000 (ID=0x166)
+    Vendor:   Intel
+    VRAM:     912 MB
+    Driver:   15.200.1045.0
+Begin MonoManager ReloadAssembly
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.dll (this message is harmless)
+Loading D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.dll into Unity Child Domain
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\Assembly-CSharp.dll (this message is harmless)
+Loading D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\Assembly-CSharp.dll into Unity Child Domain
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.UI.dll (this message is harmless)
+Loading D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.UI.dll into Unity Child Domain
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.Networking.dll (this message is harmless)
+Loading D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.Networking.dll into Unity Child Domain
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll (this message is harmless)
+Loading D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\UnityEngine.PlaymodeTestsRunner.dll into Unity Child Domain
+- Completed reload, in  0.400 seconds
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\System.Core.dll (this message is harmless)
+Platform assembly: D:\GitHub repository\Unity---Song-Nuoc\Ripple_Data\Managed\System.dll (this message is harmless)
+desktop: 1920x1080 60Hz; virtual: 4100x1080 at 0,0
+<RI> Initializing input.
+XInput1_3.dll not found. Trying XInput9_1_0.dll instead...
+<RI> Input initialized.
+<RI> Initialized touch support.
+UnloadTime: 278.046753 ms
+max: 185
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+
+Tag: v is not defined.
+ 
+(Filename:  Line: 346)
+
+Tag: v is not defined.
+ 
+(Filename:  Line: 346)
+
+Khởi tạo bề mặt
+ 
+(Filename: C:/buildslave/unity/build/artifacts/generated/common/runtime/DebugBindings.gen.cpp Line: 51)
+

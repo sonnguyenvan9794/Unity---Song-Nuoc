@@ -32,7 +32,6 @@ public class BoHoMeshScript : MonoBehaviour
     /// </summary>
     bool[] maTranBool1Chieu;
     bool[][] maTranBoBao;
-    int chenhLechMaTran;
     int themMeshCanh = 20;
 
     // Use this for initialization
@@ -44,8 +43,19 @@ public class BoHoMeshScript : MonoBehaviour
         //Tạo ma trận bờ bao
         taoMaTranBoBao();
 
-        //Xác định kích thước ma trận ao và chênh lệch rộng và dài
-        int max, min ;
+        xacDinhMaTranBoAo();
+
+
+
+    }
+
+    //--------------- Quá chậm -------------------------
+
+    //Xác định kích thước ma trận cả bờ cả ao và chênh lệch rộng và dài
+    private void xacDinhMaTranBoAo()
+    {
+        int max, min;
+        int chenhLechMaTran;
         if (DuLieu.maTranBool.Length > DuLieu.maTranBool[0].Length)
         {
             max = DuLieu.maTranBool.Length;
@@ -65,7 +75,7 @@ public class BoHoMeshScript : MonoBehaviour
                 maTranBoBao[j] = new bool[max + themMeshTong];
 
                 int begin = themMeshCanh + chenhLechMaTran / 2;
-                int end = themMeshCanh + chenhLechMaTran / 2 + min; 
+                int end = themMeshCanh + chenhLechMaTran / 2 + min;
                 for (int index = begin; index < end; index++)
                 {
                     print("**: " + index);
@@ -77,7 +87,8 @@ public class BoHoMeshScript : MonoBehaviour
             {
                 maTranBoBao[j] = new bool[max + themMeshTong];
             }
-        } else
+        }
+        else
         {
             min = DuLieu.maTranBool.Length;
             max = DuLieu.maTranBool[0].Length;
@@ -85,7 +96,7 @@ public class BoHoMeshScript : MonoBehaviour
 
             int themMeshTong = themMeshCanh * 2;
             maTranBoBao = new bool[max + themMeshTong][];
-            
+
             int begin = themMeshCanh + chenhLechMaTran / 2;
             int end = themMeshCanh + chenhLechMaTran / 2 + min;
 
@@ -112,7 +123,6 @@ public class BoHoMeshScript : MonoBehaviour
 
         //Xây dựng mesh
         //BuildMesh(max + themMeshCanh * 2);
-        
     }
 
     private void BuildMesh(int max)

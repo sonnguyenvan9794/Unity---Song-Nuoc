@@ -34,6 +34,7 @@ public class rippleKetHop : MonoBehaviour {
     bool[] maTranBool1Chieu;
 
     bool[][] maTranTmp;
+    int themMeshCanh = 30; //TÙY CHỌN
 
     // Use this for initialization
     void Start()
@@ -48,10 +49,14 @@ public class rippleKetHop : MonoBehaviour {
 
         //XÂY DỰNG MESH
         BuildMesh(max);
-        
+
+        //Dịch tọa độ của gameObject này lên (themMeshCanh, themMeshCanh)
+        gameObject.transform.Translate(new Vector3(themMeshCanh, 0, themMeshCanh) * DuLieu.getInstance().getDistance());
+
         //TẠO CÁC KHỐI NỀN
-        layCacKhoiNen();
-        
+        List<Vector4> listKhoiNen = layCacKhoiNen();
+        taoCacKhoiNen(listKhoiNen);
+
         //Lấy mesh và thiết lập
         layMeshVaThietLayMesh();
     }
@@ -224,8 +229,8 @@ public class rippleKetHop : MonoBehaviour {
 
 
     //================== tạo các khổi nền =====================
-
-    private void layCacKhoiNen()
+    
+    private List<Vector4> layCacKhoiNen()
     {
         //sao 1 ma trận từ ma trận Bool để xác định các Cube tạo nền bờ ao
         maTranTmp = new bool[DuLieu.maTranBool.Length][];
@@ -264,12 +269,39 @@ public class rippleKetHop : MonoBehaviour {
             }
         }
 
+        //Thêm các khối nền biên
+        int dai = maTranTmp.Length;
+        int rong = maTranTmp[0].Length;
+        Vector4 tmp1 = new Vector4( 0, 0, themMeshCanh, rong + themMeshCanh * 2);
+        Vector4 tmp2 = new Vector4( themMeshCanh, 0, themMeshCanh + dai , themMeshCanh);
+        Vector4 tmp3 = new Vector4( themMeshCanh, themMeshCanh + rong, themMeshCanh + dai, themMeshCanh * 2 + rong);
+        Vector4 tmp4 = new Vector4( themMeshCanh + dai, 0, themMeshCanh * 2 + dai, themMeshCanh * 2 + rong);
+
+        listKhoiNen.Add(tmp1);
+        listKhoiNen.Add(tmp2);
+        listKhoiNen.Add(tmp3);
+        listKhoiNen.Add(tmp4);
+
+        //Thêm các khối đường bao
+
         //Thử in ra các khối
         foreach (Vector4 item in listKhoiNen)
         {
             print("x = " + item.x + ", y = " + item.y + ", z = " + item.z + ", w = " + item.w);
         }
+
+        return listKhoiNen;
     }
+
+    /// <summary>
+    /// Tạo Nền cho bờ ao
+    /// </summary>
+    /// <param name="listKhoiNen">Vector4 gồm tọa độ đầu (x,y) và tọa độ sau (z,w)</param>
+    private void taoCacKhoiNen(List<Vector4> listKhoiNen)
+    {
+
+    }
+        
 
     private int kiemTraMaxDai(int dai, int rong, int x1, int y1)
     {
@@ -282,6 +314,7 @@ public class rippleKetHop : MonoBehaviour {
             if (maTranTmp[x1 + dai][y1] == true)
             {
                 checkDai = true;
+                dai--;
             }
 
         } while (checkDai == false);
@@ -297,11 +330,12 @@ public class rippleKetHop : MonoBehaviour {
             //Tăng rộng lên 1
             rong++;
 
-            for (int i = x1; i < x1 + dai; i++)
+            for (int i = x1; i <= x1 + dai; i++)
             {
                 if (maTranTmp[i][y1 + rong] == true)
                 {
                     checkRong = true;
+                    rong--;
                 }
             }
         } while (checkRong == false);
