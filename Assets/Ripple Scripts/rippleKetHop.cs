@@ -37,6 +37,7 @@ public class rippleKetHop : MonoBehaviour {
     {
         //Tạo ma trân mặt hồ
         DuLieu.getInstance().taoMaTranMatHo();
+        print("=============== ĐÃ TẠO XONG MẶT HỒ ===================");
     }
 
     // Use this for initialization
@@ -113,8 +114,8 @@ public class rippleKetHop : MonoBehaviour {
         int rowCell = row - 1;
         int colCell = col - 1;
 
-        Vector3[][] p = new Vector3[row][];
-        Vector3[] tmp = new Vector3[row * col];
+        Vector3[][] cacDinhTmp = new Vector3[row][];
+        Vector3[] cacDinh = new Vector3[row * col];
         maTranBool1Chieu = new bool[row * col];//Ma trận xác định ao
         Vector2[] uv = new Vector2[row * col];
 
@@ -122,13 +123,13 @@ public class rippleKetHop : MonoBehaviour {
         int i = 0;
         for (i = 0; i < row; i++)
         {
-            p[i] = new Vector3[col];
+            cacDinhTmp[i] = new Vector3[col];
 
             for (int j = 0; j < col; j++)
             {
-                p[i][j] = new Vector3(i / k, 0, j / k);
+                cacDinhTmp[i][j] = new Vector3(i / k, 0, j / k);
                 //print("(" + i + "," + j + ",0)");
-                tmp[i * row + j] = p[i][j];
+                cacDinh[i * row + j] = cacDinhTmp[i][j];
                 uv[i * row + j] = new Vector2((float)i / row, (float)j / col);
 
                 if (i < DuLieu.maTranBool.Length && j < DuLieu.maTranBool[0].Length && DuLieu.maTranBool[i][j])
@@ -162,7 +163,7 @@ public class rippleKetHop : MonoBehaviour {
                 int hangicong1 = hangi + col;
 
                 //Loaoij bỏ các trangles không thuộc ao
-                int hangiTest = j * row + i;
+                int hangiTest = i * row + j;
                 int hangicong1Test = hangiTest + col;
                 if (!(maTranBool1Chieu[hangiTest] && maTranBool1Chieu[hangicong1Test] && maTranBool1Chieu[hangiTest + 1] && maTranBool1Chieu[hangicong1Test + 1]))
                 {
@@ -185,7 +186,7 @@ public class rippleKetHop : MonoBehaviour {
         //---- uv --------
 
         Mesh mesh2 = new Mesh();
-        mesh2.vertices = tmp;
+        mesh2.vertices = cacDinh;
         mesh2.triangles = diem;
         mesh2.uv = uv;
 

@@ -27,7 +27,12 @@ public class DuLieu : MonoBehaviour{
     /// <summary>
     /// Độ rộng đơn vị mesh bờ ao. Mỗi đơn vị có độ dài  = distance
     /// </summary>
-    private int chieuRongMeshBoAo = 30; //TÙY CHỌN
+    private int chieuRongMeshBoAo = 100;
+
+    /// <summary>
+    /// Độ cao bờ ao
+    /// </summary>
+    private float doCaoBoBao = 0.5f;
 
     private DuLieu()
     {
@@ -142,6 +147,11 @@ public class DuLieu : MonoBehaviour{
     public float getDistance()
     {
         return distance;
+    }
+
+    public float getDoCaoBoBao()
+    {
+        return doCaoBoBao;
     }
 
     public int getChieuRongMeshBoAo()

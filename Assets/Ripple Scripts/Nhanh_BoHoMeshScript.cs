@@ -11,16 +11,19 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
     {
         //TẠO CÁC KHỐI NỀN
         List<Vector4> listKhoiNen = layCacKhoiNen();
-        taoCacKhoiNen(listKhoiNen);
-    }
-	
-	// Update is called once per frame
-	void Update () {
+        print("=== tạo nền bờ bao =======");
+        buildMeshBoBao(listKhoiNen);
 
+        //Đặt vị trí
+        gameObject.transform.position = new Vector3(0, DuLieu.getInstance().getDoCaoBoBao(), 0);
     }
 
     //================== tạo các khổi nền =====================
 
+    /// <summary>
+    /// Lấy danh sách các khối nền với tọa độ đơn vị
+    /// </summary>
+    /// <returns></returns>
     private List<Vector4> layCacKhoiNen()
     {
         //sao 1 ma trận từ ma trận Bool để xác định các Cube tạo nền bờ ao
@@ -60,27 +63,42 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
             }
         }
 
-        //Thêm các khối nền biên
+        //Dịch khối này lên (themMeshCanh, themMeshCanh);
         int themMeshCanh = DuLieu.getInstance().getChieuRongMeshBoAo();
+        for (int i = 0; i < listKhoiNen.Count; i++)
+        {
+            Vector4 t = listKhoiNen[i];
+            listKhoiNen[i] = new Vector4(t.x + themMeshCanh, t.y + themMeshCanh, t.z + themMeshCanh, t.w + themMeshCanh);
+        }
+
+        //Thêm các khối nền biên
         int dai = maTranTmp.Length;
         int rong = maTranTmp[0].Length;
-        Vector4 tmp1 = new Vector4(0, 0, themMeshCanh, rong + themMeshCanh * 2);
+        Vector4 tmp1 = new Vector4(0, 0, themMeshCanh, rong + 2 * themMeshCanh - 1);
         Vector4 tmp2 = new Vector4(themMeshCanh, 0, themMeshCanh + dai, themMeshCanh);
-        Vector4 tmp3 = new Vector4(themMeshCanh, themMeshCanh + rong, themMeshCanh + dai, themMeshCanh * 2 + rong);
-        Vector4 tmp4 = new Vector4(themMeshCanh + dai, 0, themMeshCanh * 2 + dai, themMeshCanh * 2 + rong);
+        Vector4 tmp3 = new Vector4(themMeshCanh, themMeshCanh + rong - 1, themMeshCanh + dai, 2 * themMeshCanh + rong - 1);
+        Vector4 tmp4 = new Vector4(themMeshCanh + dai - 1, 0, 2 * themMeshCanh + dai - 1, 2 * themMeshCanh + rong - 1);
 
         listKhoiNen.Add(tmp1);
         listKhoiNen.Add(tmp2);
         listKhoiNen.Add(tmp3);
         listKhoiNen.Add(tmp4);
 
+        //Xác định lại tọa độ chính xác:
+        //for (int i = 0; i < listKhoiNen.Count; i++)
+        //{
+        //    listKhoiNen[i] = listKhoiNen[i] * DuLieu.getInstance().getDistance();
+        //}
+
         //Thêm các khối đường bao
 
         //Thử in ra các khối
+        print("======= Các khối nền bao==========");
         foreach (Vector4 item in listKhoiNen)
         {
             print("x = " + item.x + ", y = " + item.y + ", z = " + item.z + ", w = " + item.w);
         }
+        print("----------------------------------");
 
         return listKhoiNen;
     }
@@ -89,9 +107,76 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
     /// Tạo Nền cho bờ ao
     /// </summary>
     /// <param name="listKhoiNen">Vector4 gồm tọa độ đầu (x,y) và tọa độ sau (z,w)</param>
-    private void taoCacKhoiNen(List<Vector4> listKhoiNen)
+    private void buildMeshBoBao(List<Vector4> list)
     {
+        int soDinh = list.Count * 4;
+        Vector3[] vertices = new Vector3[ soDinh];   //vertices
+        Vector2[] uv = new Vector2[ soDinh];        //uv
+        int[] triangles = new int[6 * list.Count];//triangles
 
+
+        //Khởi tạo Lấy các đỉnh
+        float dai = (float) DuLieu.maTranBool.Length + 2 * DuLieu.getInstance().getChieuRongMeshBoAo();
+        float rong = (float) DuLieu.maTranBool[0].Length + 2 * DuLieu.getInstance().getChieuRongMeshBoAo();
+
+        float distance = DuLieu.getInstance().getDistance(); //Độ dài mỗi đơn vị
+        float yValue = DuLieu.getInstance().getDoCaoBoBao(); //Lấy độ cao bờ bao, tuy nhiên bị ảnh hưởng bởi độ cao của gameObject
+        
+        int count1 = 0; //Biến chạy vertices và uv
+        int count2 = 0; //Biến chạy triangles
+        //Lấy các đỉnh vertices và uv
+        for (int i = 0; i < list.Count; i++)
+        {
+            //tạo vertices và uv
+            Vector4 tmp = list[i] * distance; // Lấy tọa độ thực từ tọa độ đơn vị
+            //Gán theo thứ tự (0,0), (1,0), (1,1), (0,1)
+            vertices[count1] = new Vector3(tmp.x, yValue, tmp.y);
+            uv[count1] = new Vector2( tmp.x / dai, tmp.y /rong);
+
+            vertices[count1 + 1] = new Vector3(tmp.z, yValue, tmp.y);
+            uv[count1 + 1] = new Vector2(tmp.z / dai, tmp.y / rong);
+
+            vertices[count1 + 2] = new Vector3(tmp.z, yValue, tmp.w);
+            uv[count1 + 2] = new Vector2(tmp.z / dai, tmp.w / rong);
+
+            vertices[count1 + 3] = new Vector3(tmp.x, yValue, tmp.w);
+            uv[count1 + 3] = new Vector2(tmp.x / dai, tmp.w / rong);
+
+            //Tạo triangles
+            triangles[count2++] = count1;
+            triangles[count2++] = count1 + 2;
+            triangles[count2++] = count1 + 1;
+
+            triangles[count2++] = count1;
+            triangles[count2++] = count1 + 3;
+            triangles[count2++] = count1 + 2;
+
+            //Tăng biến đếm
+            count1 += 4;
+        }
+
+        //Tạo mesh
+        Mesh mesh = new Mesh();
+        mesh.vertices = vertices;
+        mesh.triangles = triangles;
+        mesh.uv = uv;
+
+        mesh.RecalculateNormals();
+        mesh.RecalculateBounds();
+        if (!GetComponent<MeshFilter>())
+            gameObject.AddComponent<MeshFilter>();
+        if (!GetComponent<MeshRenderer>())
+            gameObject.AddComponent<MeshRenderer>();
+        if (!GetComponent<MeshCollider>())
+            gameObject.AddComponent<MeshCollider>();
+
+        gameObject.GetComponent<MeshFilter>().mesh = mesh;
+
+        MeshCollider meshc = gameObject.GetComponent<MeshCollider>();
+        meshc.sharedMesh = mesh;
+        //meshc.tag = "nen";
+
+        print("=== Tạo xong bờ bao ====");
     }
 
 
@@ -106,7 +191,6 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
             if (maTranTmp[x1 + dai][y1] == true)
             {
                 checkDai = true;
-                dai--;
             }
 
         } while (checkDai == false);
@@ -122,12 +206,11 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
             //Tăng rộng lên 1
             rong++;
 
-            for (int i = x1; i <= x1 + dai; i++)
+            for (int i = x1; i < x1 + dai; i++)
             {
                 if (maTranTmp[i][y1 + rong] == true)
                 {
                     checkRong = true;
-                    rong--;
                 }
             }
         } while (checkRong == false);
@@ -170,8 +253,8 @@ public class Nhanh_BoHoMeshScript : MonoBehaviour {
         Vector4 thongSo = new Vector4();
         thongSo.x = x1 - 1;
         thongSo.y = y1 - 1;
-        thongSo.z = x1 + dai + 1;
-        thongSo.w = y1 + rong + 1;
+        thongSo.z = x1 + dai;
+        thongSo.w = y1 + rong;
 
         return thongSo;
     }
